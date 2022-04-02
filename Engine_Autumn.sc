@@ -22,8 +22,8 @@ Engine_Autumn : CroneEngine {
 SynthDef("Autumn", {
       arg out, freq = 440, rate= 2; 
       var local, sig, ifft, fftA, fftB, fft, filt, panAr,decimate,hissMix,duckedHiss;
-     var snd = SinOsc.ar(freq+SinOsc.ar(freq/100, 0, release*2), 0, 0.8).frac;
-	   var env = Linen.kr(Impulse.kr(0), attack, amp, release, doneAction: Done.freeSelf);
+       var snd = Pulse.ar(freq+SinOsc.ar(freq/100, 0, release*2), 0, 1).frac;
+	   var env = Linen.kr(Impulse.kr(0), attack, 1, release, doneAction: Done.freeSelf);
 	var insig = Mix.fill(12, {Decay2.ar(Dust.ar(0.1), 0.1, 2, 0.1) * snd});
     var insig2 =  Decay2.ar(Dust.ar(XLine.kr(1,20, release)), 0.05, 0.2) *WhiteNoise.ar(0.1);
 
@@ -38,7 +38,7 @@ SynthDef("Autumn", {
 	4.do{arg i; insig = AllpassN.ar(insig, 0.2, 0.001.rrand(0.2))}; 
 
 
-	local = LocalIn.ar(2)*amp; 
+	local = LocalIn.ar(2)*1; 
 	local = OnePole.ar(local, 0.5); 
 
     local = AllpassN.ar(local, 0.05, {Rand(0.003,0.05)}!2, 2);
@@ -57,7 +57,7 @@ SynthDef("Autumn", {
        //filt = MoogFF.ar(local, cutoff, gain);
        panAr = Pan2.ar(local * env, pan, 1.0);
        decimate = Decimator.ar(panAr, rate: 48000, bits: bits, mul: 1.0, add: 0);
-       hissMix = HPF.ar(Mix.new([PinkNoise.ar(1), Dust.ar(5,1)]), 3000, 1);
+       hissMix = HPF.ar(Mix.new([PinkNoise.ar(1), Dust.ar(5,1)]), 2000, 1);
        duckedHiss = Compander.ar(hissMix, decimate,
         thresh: 0.4,
         slopeBelow: 1,
@@ -65,6 +65,7 @@ SynthDef("Autumn", {
         clampTime: 0.01,
         relaxTime: 0.1,
       ) * (hiss / 500);
+	
 	
 
       Out.ar(out, Mix.new([decimate, duckedHiss]));
