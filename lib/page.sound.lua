@@ -55,28 +55,6 @@ return UI.Page.new({
           redraw()
         end
       },
-              {
-        name = "fb",
-        value = function()
-          return util.round(params:get("fb"), round_quant)
-        end,
-        enc_3_action = function(_, _, d)
-          local pw = params:get("fb")
-          params:set("fb", util.clamp(fb + (d / 1000), 0, 1, 0.1))
-          redraw()
-        end
-      },
-      {
-        name = "num",
-        value = function()
-          return util.round(params:get("num"), round_quant)
-        end,
-        enc_3_action = function(_, _, d)
-          local pw = params:get("num")
-          params:set("num", util.clamp(num + (d / 1000), 0, 7, 0.2))
-          redraw()
-        end
-    },
     }
   )
 })
