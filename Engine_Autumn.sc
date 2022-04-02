@@ -74,7 +74,7 @@ SynthDef("Autumn", {
 
     SynthDef("Autumn-rustle", {
       arg out, rustlefreq = rustlefreq, rustlepan = rustlepan, rustleamp = rustleamp, gain = gain, attack = attack, release = release, bits = bits, hiss = hiss;
-      var snd = BHiPass4.ar(Mix.new([PinkNoise.ar(1), Dust.ar(5, 1)]), rustlefreq, 0.95, rustleamp);
+      var snd = BHiPass4.ar(Mix.new([PinkNoise.ar(1), Dust.ar(5, 1)]), rustlefreq, 0.5, rustleamp);
       var env = Linen.kr(Impulse.kr(0), 1.8, rustleamp, 1.2, doneAction: Done.freeSelf);
       var panAr = Pan2.ar(snd * env, rustlepan, 1.0);
       Out.ar(out, panAr);
