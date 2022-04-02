@@ -94,9 +94,7 @@ SynthDef("Autumn", {
           \pan, pan,
           \bits, bits,
           \hiss, hiss,
-					\fb, fb,
-					\num, num,
-					\rate, rate
+					
 					
         ],
         target: pg
