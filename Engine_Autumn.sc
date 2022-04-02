@@ -2,10 +2,10 @@ Engine_Autumn : CroneEngine {
   var pg;
   var amp = 0.3;
   var attack = 0.5;
-  var release = 0.5;
+  var release = 10;
   var pan = 0.0;
   var pw = 0.5;
-  var cutoff = 1000;
+  var cutoff = 100;
   var gain = 1;
   var bits = 32;
   var hiss = 0;
