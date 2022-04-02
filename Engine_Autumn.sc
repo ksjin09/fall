@@ -20,33 +20,33 @@ Engine_Autumn : CroneEngine {
   alloc {
     pg = ParGroup.tail(context.xg);
 SynthDef("Autumn", {
-      arg out, freq = 440, pw = 0.5, pan = 0, amp = 0.3, cutoff = 1000, gain = 1, attack = 0.5, release = 5, bits = 32, hiss = 0, fb= 1, lfo= 1, rate= 2, cutoff2=500, num = 1, dur=1;
-	  var local, sig, ifft, fftA, fftB, fft, filt, panAr,decimate,hissMix,duckedHiss;
-      //var snd = Pulse.ar(freq, pw);
+      arg out, freq = 440, pw = 0.5, pan = 0, amp = 0.3, cutoff = 1000, gain = 1, attack = 0.5, release = 5, bits = 32, hiss = 0, fb= 1, rate= 2; 
+      var local, sig, ifft, fftA, fftB, fft, filt, panAr,decimate,hissMix,duckedHiss;
+       var snd = Pulse.ar(freq+SinOsc.ar(rate, 0, cutoff/2), pw).frac;
 	   var env = Linen.kr(Impulse.kr(0), attack, amp, release, doneAction: Done.freeSelf);
-	var insig = Mix.fill(12, {Decay2.ar(Dust.ar(0.1), 0.1, 2, 0.1) * SinOsc.ar((IRand(36,84).midicps+SinOsc.ar(rate, 0, lfo)), 0, amp).frac});
-    var insig2 =  Decay2.ar(Dust.ar(XLine.kr(1,20, dur)), 0.05, 0.2) *WhiteNoise.ar(0.1);
+	var insig = Mix.fill(12, {Decay2.ar(Dust.ar(0.1), 0.1, 2, 0.1) * snd});
+    var insig2 =  Decay2.ar(Dust.ar(XLine.kr(1,20, release)), 0.05, 0.2) *WhiteNoise.ar(0.1);
 
 	fft = FFT(LocalBuf(512), insig2);
 	fftA = PV_OddBin(fft);
-	fftB = PV_RandComb(fft, 0.9, Impulse.kr(XLine.kr(0.1,10, dur)));
+	fftB = PV_RandComb(fft, 0.9, Impulse.kr(XLine.kr(0.1,10, release)));
 	fft = PV_MagMul(fftA,fftB);
 	ifft = IFFT(fft);
 
-	insig = insig+ifft; // insig2는 fft를 거쳐서 나감
+	insig = insig+ifft; 
 
-	4.do{arg i; insig = AllpassN.ar(insig, 0.2, 0.001.rrand(0.2))}; // 음색변화 없는 delay
+	4.do{arg i; insig = AllpassN.ar(insig, 0.2, 0.001.rrand(0.2))}; 
 
 
-	local = LocalIn.ar(2)*fb; // localin에서 채널을 2개 만들어준 이유는 feedback시키는 과정의 소리가 2채널이므로, feedback coef에 곱해서 나감
-	local = OnePole.ar(local, 0.5); // lowpass filter
+	local = LocalIn.ar(2)*amp; 
+	local = OnePole.ar(local, 0.5); 
 
     local = AllpassN.ar(local, 0.05, {Rand(0.003,0.05)}!2, 2);
 
-	local = DelayN.ar(HPF.ar(local, cutoff2), 1.0,
+	local = DelayN.ar(HPF.ar(local, cutoff), 1.0,
 		Array.fill(2, {arg i;
-		LFNoise1.kr(num**i,3.0.rrand(32),4.0.rrand(10.0)*(i+1))*0.001;
-	}).abs);  // 계속 변하는 delaytime
+		LFNoise1.kr(pw**i,3.0.rrand(32),4.0.rrand(10.0)*(i+1))*0.001;
+	}).abs); 
 
 	local = AllpassN.ar(local, 0.05, {Rand(0.01,0.05)}!2, 0.2);
 
