@@ -93,7 +93,11 @@ SynthDef("Autumn", {
           \release, release,
           \pan, pan,
           \bits, bits,
-          \hiss, hiss
+          \hiss, hiss,
+					\fb, fb,
+					\num, num,
+					\rate, rate
+					
         ],
         target: pg
       );
@@ -148,6 +152,15 @@ SynthDef("Autumn", {
     });
     this.addCommand("gain", "f", { arg msg;
       gain = msg[1];
+			 this.addCommand("num", "f", { arg msg;
+      num = msg[1];
+			});
+				this.addCommand("rate", "i", { arg msg;
+      rate = msg[1]; 
+			});
+					this.addCommand("fb", "f", { arg msg;
+      fb = msg[1];
+			});
     });
   }
 }
