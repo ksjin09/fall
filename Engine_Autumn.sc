@@ -20,9 +20,9 @@ Engine_Autumn : CroneEngine {
   alloc {
     pg = ParGroup.tail(context.xg);
 SynthDef("Autumn", {
-      arg out, freq = 440, pw = 0.5, pan = 0, amp = 0.3, cutoff = 1000, gain = 1, attack = 0.5, release = 5, bits = 32, hiss = 0, fb= 1, rate= 2; 
+      arg out, freq = 440, rate= 2; 
       var local, sig, ifft, fftA, fftB, fft, filt, panAr,decimate,hissMix,duckedHiss;
-       var snd = Pulse.ar(freq+SinOsc.ar(rate, 0, cutoff/2), pw).frac;
+     var snd = SinOsc.ar(freq+SinOsc.ar(freq/100, 0, release*2), 0, 0.8).frac;
 	   var env = Linen.kr(Impulse.kr(0), attack, amp, release, doneAction: Done.freeSelf);
 	var insig = Mix.fill(12, {Decay2.ar(Dust.ar(0.1), 0.1, 2, 0.1) * snd});
     var insig2 =  Decay2.ar(Dust.ar(XLine.kr(1,20, release)), 0.05, 0.2) *WhiteNoise.ar(0.1);
@@ -45,7 +45,7 @@ SynthDef("Autumn", {
 
 	local = DelayN.ar(HPF.ar(local, cutoff), 1.0,
 		Array.fill(2, {arg i;
-		LFNoise1.kr(pw**i,3.0.rrand(32),4.0.rrand(10.0)*(i+1))*0.001;
+		LFNoise1.kr(5**i,3.0.rrand(32),4.0.rrand(10.0)*(i+1))*0.001;
 	}).abs); 
 
 	local = AllpassN.ar(local, 0.05, {Rand(0.01,0.05)}!2, 0.2);
@@ -54,10 +54,10 @@ SynthDef("Autumn", {
 			LocalOut.ar(local);
 
 
-       filt = MoogFF.ar(local, cutoff, gain);
-       panAr = Pan2.ar(filt * env, pan, 1.0);
+       //filt = MoogFF.ar(local, cutoff, gain);
+       panAr = Pan2.ar(local * env, pan, 1.0);
        decimate = Decimator.ar(panAr, rate: 48000, bits: bits, mul: 1.0, add: 0);
-       hissMix = HPF.ar(Mix.new([PinkNoise.ar(1), Dust.ar(5,1)]), 2000, 1);
+       hissMix = HPF.ar(Mix.new([PinkNoise.ar(1), Dust.ar(5,1)]), 3000, 1);
        duckedHiss = Compander.ar(hissMix, decimate,
         thresh: 0.4,
         slopeBelow: 1,
@@ -151,16 +151,7 @@ SynthDef("Autumn", {
       cutoff = msg[1];
     });
     this.addCommand("gain", "f", { arg msg;
-      gain = msg[1];
-			 this.addCommand("num", "f", { arg msg;
-      num = msg[1];
-			});
-				this.addCommand("rate", "i", { arg msg;
-      rate = msg[1]; 
-			});
-					this.addCommand("fb", "f", { arg msg;
-      fb = msg[1];
-			});
+      gain = msg[1];	
     });
   }
 }
